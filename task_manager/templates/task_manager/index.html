@@ -1,0 +1,61 @@
+{% extends "task_manager/base.html" %}
+
+{% load static %}
+
+{% block title %}学習サービス|FirstApp{% endblock title %}
+
+{% block header %}
+<!-- Masthead-->
+<header class="masthead">
+    <div class="container px-4 px-lg-5 h-100">
+        <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
+            <div class="col-lg-8 align-self-end">
+                <h1 class="text-white font-weight-bold">First App</h1>
+                <hr class="divider" />
+            </div>
+            <div class="col-lg-8 align-self-baseline">
+                <p class="text-white-75 mb-5">~ あなた専用の学習サービス ~</p>
+                <a class="btn btn-primary btn-xl mb-4" href="#about">LOGIN</a><br>
+                <a class='white-text' href="">アカウントがありませんか？</a>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Services-->
+<section class="page-section" id="services">
+    <div class="container px-4 px-lg-5">
+        <h2 class="text-center mt-0">At Your Service</h2>
+        <hr class="divider" />
+        <div class="row gx-4 gx-lg-5">
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-5">
+                    <div class="mb-2"><i class="bi-gem fs-1 text-primary"></i></div>
+                    <h3 class="h4 mb-2">Create Tasks</h3>
+                    <p class="text-muted mb-0">AIによるタスク生成</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-5">
+                    <div class="mb-2"><i class="bi-laptop fs-1 text-primary"></i></div>
+                    <h3 class="h4 mb-2">Lecture</h3>
+                    <p class="text-muted mb-0">AIによる講義</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-5">
+                    <div class="mb-2"><i class="bi-globe fs-1 text-primary"></i></div>
+                    <h3 class="h4 mb-2">Test</h3>
+                    <p class="text-muted mb-0">AIによる理解度チェック</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-5">
+                    <div class="mb-2"><i class="bi-heart fs-1 text-primary"></i></div>
+                    <h3 class="h4 mb-2">Management</h3>
+                    <p class="text-muted mb-0">学習管理</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock header %}
