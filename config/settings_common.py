@@ -15,6 +15,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'task_manager.apps.TaskManagerConfig',
+    'accounts.apps.AccountsConfig',
+    'analysis.apps.AnalysisConfig',
 ]
 
 
@@ -52,7 +54,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
-
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('DB_ENGINE'),
@@ -66,7 +67,6 @@ DATABASES = {
 
 
 # Password validation
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -84,7 +84,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-
 LANGUAGE_CODE = 'ja'
 
 TIME_ZONE = 'Asia/Tokyo'
@@ -95,12 +94,15 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-
 STATIC_URL = 'static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-# Default primary key field type
 
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# ユーザーモデル
+AUTH_USER_MODEL = 'accounts.CustomUser'
