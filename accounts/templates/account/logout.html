@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}ログアウト|First App{% endblock title %}
+
+{% block active_logout %}active{% endblock active_logout %}
+
+{% block contents %}
+<div class='container'>
+    <div class='row'>
+        <div class='my-div-style'>
+            <h1>ログアウト</h1>
+            <p>ログアウトしてもよろしいですか？</p>
+            <form action="{% url 'account_logout' %}" method='POST'>
+                {% csrf_token %}
+
+                <button class='btn btn-primary' type='submit'>ログアウト</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock contents %}
