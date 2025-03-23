@@ -14,9 +14,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'task_manager.apps.TaskManagerConfig',
     'accounts.apps.AccountsConfig',
     'analysis.apps.AnalysisConfig',
+
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'django_bootstrap5',
 ]
 
 
@@ -28,6 +35,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 
@@ -37,7 +46,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -106,3 +115,38 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ユーザーモデル
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+
+# 認証機能(django-allauth)の設定
+# django.contrib.sitesを使うためのサイト識別用ID
+SITE_ID = 1
+
+# 認証バックエンド
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# メールアドレス認証に変更
+ACCOUNT_LOGIN_METHODS = {'email'}
+
+# サインアップにメールアドレス確認を挟む
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+# ログイン/ログアウト後のリダイレクト先
+LOGIN_REDIRECT_URL = 'task_manager:index'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'
+
+# ログアウトリンクのクリック1回でログアウト
+ACCOUNT_LOGOUT_ON_SET = True
+
+# django-allauthが送信するメール件名に自動付与される接頭辞をブランクにする
+ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
+
+# デフォルトのメール送信元
+DEFAULT_FROM_EMAIL = os.environ.get('FROM_EMAIL')
+
+
+# メディアファイル関連
+MEDIA_URL = '/media/'

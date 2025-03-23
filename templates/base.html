@@ -25,24 +25,28 @@
 
         {% block head %}{% endblock head %}
     </head>
+
     <body>
         <div id='wrapper'>
             <!-- Navigation-->
             <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
                 <div class="container px-4 px-lg-5">
-                    <a class="navbar-brand" href="#page-top">First App</a>
+                    <a class="navbar-brand" href="{% url 'task_manager:index' %}">First App</a>
                     <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                     <div class="collapse navbar-collapse" id="navbarResponsive">
                         <ul class="navbar-nav ms-auto my-2 my-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#about">About</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link {% block active_login %}{% endblock active_login %}" href="#services">LogIn</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link {% block active_signup %}{% endblock active_signup %}" href="#portfolio">SignUp</a>
-                            </li>
+                            {% if user.is_authenticated %}
+                                <li class="nav-item">
+                                    <a class="nav-link" {% block active_logout %}{% endblock active_logout %} href="{% url 'account_logout' %}">Log Out</a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% block active_signup %}{% endblock active_signup %}" href="{% url 'account_signup' %}">Sign Up</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% block active_login %}{% endblock active_login %}" href="{% url 'account_login' %}">Log In</a>
+                                </li>
+                            {% endif %}
                             <li class="nav-item">
                                 <a class="nav-link {% block active_inquiry %}{% endblock active_inquiry %}" href="{% url 'task_manager:inquiry' %}">Inquiry</a>
                             </li>
@@ -83,4 +87,5 @@
             <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
         </div>
     </body>
+    
 </html>
