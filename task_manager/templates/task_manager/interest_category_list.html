@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}興味カテゴリ|First App{% endblock title %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static "css/clean_blog.css" %}">
+    <link rel="stylesheet" href="{% static "css/mystyle.css" %}">
+{% endblock head %}
+
+{% block contents %}
+<div class='container my-div-style'>
+    <div class='row'>
+        <div class=''>
+            <h1 class='h-100'>{{ user.username }} さんの興味カテゴリ</h1>
+        </div>
+        {% for category in interest_categories %}
+            <div>
+                <a href="#">
+                    <li>{{ category.name }}</li>
+                </a>
+                <a class='btn btn-sm' href="{% url 'task_manager:delete_interest_category' category.id %}">削除</a>
+            </div>
+            <hr>
+        {% empty %}
+            <p>興味カテゴリが登録されていません。</p>
+        {% endfor %}
+        <div class='d-flex'>
+            <a class='btn btn-primary' href="{% url 'task_manager:add_interest_category' %}">追加</a>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

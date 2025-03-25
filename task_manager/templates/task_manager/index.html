@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% load static %}
 
 {% block title %}学習サービス|FirstApp{% endblock title %}
@@ -17,7 +16,9 @@
                 <p class="text-white-75 mb-5">~ あなた専用の学習サービス ~</p>
                 {% if not user.is_authenticated %}
                     <a class="btn btn-primary btn-xl mb-4" href="{% url 'account_login' %}">LOGIN</a><br>
-                    <a class='white-text' href="{% url 'account_signup' %}">アカウントがありませんか？</a>
+                    <a class='text-white' href="{% url 'account_signup' %}">アカウントがありませんか？</a>
+                {% else %}
+                    <a class='btn btn-primary btn-xl mb-4' href="{% url 'task_manager:interest_category' %}">興味カテゴリ</a>
                 {% endif %}
             </div>
         </div>

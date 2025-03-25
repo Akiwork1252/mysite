@@ -10,7 +10,7 @@ __pycache__/
 
 # メディア、静的ファイル
 /media/
-static/
+static/*
 !static/css/
 !static/css/*
 !static/js/

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}興味カテゴリ追加|First App{% endblock title %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static "css/clean_blog.css" %}">
+    <link rel="stylesheet" href="{% static "css/mystyle.css" %}">
+{% endblock head %}
+
+{% block contents %}
+<div class='container'>
+    <div class='my-div-style col-12 col-md-7'>
+        <div>
+            <h1>興味カテゴリの追加</h1>
+        </div>
+        <form action="" method='POST'>
+            {% csrf_token %}
+
+            {{ form.as_p }}
+            <button class='btn btn-primary'>追加</button>
+        </form>
+    </div>
+</div>
+{% endblock contents %}
