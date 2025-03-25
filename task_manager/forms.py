@@ -3,6 +3,8 @@ import os
 from django import forms
 from django.core.mail import EmailMessage
 
+from .models import UserInterestCategory
+
 
 # お問い合わせフォーム
 class InquiryForm(forms.Form):
@@ -37,3 +39,16 @@ class InquiryForm(forms.Form):
         message = EmailMessage(subject=subject, body=message, 
                                from_email=from_email, to=to_list, cc=cc_list)
         message.send()
+
+
+# 興味カテゴリ追加フォーム
+class AddInterestCategoryForm(forms.ModelForm):
+    class Meta:
+        model = UserInterestCategory
+        fields = ['category']
+        widgets = {
+            'category': forms.Select(attrs={'class': 'form-select'}),
+        }
+        labels = {
+            'category': '追加する興味カテゴリを選択してください。'
+        }
