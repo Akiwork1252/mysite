@@ -16,7 +16,7 @@
         </div>
         {% for category in interest_categories %}
             <div>
-                <a href="#">
+                <a href="{% url 'task_manager:learning_objective_list' category.id %}">
                     <li>{{ category.name }}</li>
                 </a>
                 <a class='btn btn-sm' href="{% url 'task_manager:delete_interest_category' category.id %}">削除</a>
