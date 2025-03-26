@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static "css/clean_blog.css" %}">
+    <link rel="stylesheet" href="{% static "css/mystyle.css" %}">
+{% endblock head %}
+
+{% block title %}学習目標リスト|First App{% endblock title %}
+
+{% block contents %}
+<div class='container my-div-style'>
+    <div class='row'>
+        <div>
+            <h1 class='h-100'>{{ user.username }} さんの学習目標 <strong>~ {{ category.name }} ~</strong></h1>
+        </div>
+        {% for learning_objective in object_list %}
+            <div>
+                <a href="#">
+                    <li>{{ learning_objective.title }}</li>
+                </a>
+                <a class='btn btn-sm' href="{% url 'task_manager:delete_learning_objective' learning_objective.id %}">削除</a>
+            </div>
+            <hr>
+        {% empty %}
+            <p><strong>"{{ category.name }}"</strong>の学習目標がありません。</p>
+        {% endfor %}
+        <div>
+            <a class='btn btn-primary' href="#">作成</a>
+        </div>
+    </div>
+</div>
+{% endblock contents %}
