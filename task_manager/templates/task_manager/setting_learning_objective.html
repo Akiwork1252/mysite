@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static "css/clean_blog.css" %}">
+    <link rel="stylesheet" href="{% static "css/mystyle.css" %}">
+{% endblock head %}
+
+{% block title %}学習目標の設定|First App{% endblock title %}
+
+{% block contents %}
+<div class='container'>
+    <div class='my-div-style col-12 col-md-7'>
+        <div>
+            <h1><strong>"{{ category.name }}"</strong> の学習目標 ~{{ user.username }}~</h1>
+        </div>
+        <form action="">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+            <button class='btn btn-primary'>決定</button>
+        </form>
+    </div>
+</div>
+{% endblock contents %}

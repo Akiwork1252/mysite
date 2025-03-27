@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import generic, View
 
-from .forms import InquiryForm, AddInterestCategoryForm
+from .forms import InquiryForm, AddInterestCategoryForm, SettingLearningObjectiveForm
 from .models import Category, UserInterestCategory, LearningObjective
 
 
@@ -86,6 +86,22 @@ class LearningObjectiveListView(LoginRequiredMixin, generic.ListView):
             user=self.request.user,
             category_id=category,
         )
+
+# 学習目標設定
+class SettingLearningObjectiveView(LoginRequiredMixin, generic.FormView):
+    form_class = SettingLearningObjectiveForm
+    template_name = 'task_manager/setting_learning_objective.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category_id = self.kwargs['category_id']
+        category = get_object_or_404(
+            Category, 
+            id=category_id
+        )
+        context["category"] = category
+        return context
+        
 
 # 学習目標削除
 class DeleteLerningObjectiveView(LoginRequiredMixin, generic.DeleteView):

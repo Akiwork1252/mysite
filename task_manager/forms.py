@@ -3,7 +3,7 @@ import os
 from django import forms
 from django.core.mail import EmailMessage
 
-from .models import UserInterestCategory
+from .models import UserInterestCategory, LearningObjective
 
 
 # お問い合わせフォーム
@@ -51,4 +51,31 @@ class AddInterestCategoryForm(forms.ModelForm):
         }
         labels = {
             'category': '追加する興味カテゴリを選択してください。'
+        }
+
+
+# 学習目標設定フォーム
+class SettingLearningObjectiveForm(forms.ModelForm):
+    class Meta:
+        model = LearningObjective
+        fields = ['title', 'current_level', 'target_level']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '例: Python株価予測',
+            }),
+            'current_level': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '例: Python基礎文法は習得済み',
+            }),
+            'target_level': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': '詳細に記載することで、より最適な学習計画が生成されます。',
+                'rows': 5,
+            }),
+        }
+        labels = {
+            'title': 'タイトル(必須)',
+            'current_level': '現在のレベル(任意)',
+            'target_level': '到達レベル(任意)', 
         }
