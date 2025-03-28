@@ -64,14 +64,15 @@ class SettingLearningObjectiveForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': '例: Python株価予測',
             }),
-            'current_level': forms.TextInput(attrs={
+            'current_level': forms.Textarea(attrs={
+                'rows': 3,
                 'class': 'form-control',
                 'placeholder': '例: Python基礎文法は習得済み',
             }),
             'target_level': forms.Textarea(attrs={
+                'rows': 5,
                 'class': 'form-control',
                 'placeholder': '詳細に記載することで、より最適な学習計画が生成されます。',
-                'rows': 5,
             }),
         }
         labels = {
