@@ -14,7 +14,7 @@
         <div>
             <h1><strong>"{{ category.name }}"</strong> の学習目標 ~{{ user.username }}~</h1>
         </div>
-        <form action="">
+        <form action="" method='POST'>
             {% csrf_token %}
 
             {{ form.as_p }}

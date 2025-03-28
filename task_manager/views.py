@@ -2,12 +2,13 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic, View
 
 from .forms import InquiryForm, AddInterestCategoryForm, SettingLearningObjectiveForm
-from .models import Category, UserInterestCategory, LearningObjective
+from .models import Category, UserInterestCategory, LearningObjective, LearningMainTopic, LearningSubTopic
+from ai_support.ai_survices import ai_generate_learning_task
 
 
 logger = logging.getLogger(__name__)
@@ -87,21 +88,101 @@ class LearningObjectiveListView(LoginRequiredMixin, generic.ListView):
             category_id=category,
         )
 
+
 # 学習目標設定
 class SettingLearningObjectiveView(LoginRequiredMixin, generic.FormView):
     form_class = SettingLearningObjectiveForm
     template_name = 'task_manager/setting_learning_objective.html'
+    success_url = reverse_lazy('task_manager:preview_generated_task')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         category_id = self.kwargs['category_id']
-        category = get_object_or_404(
-            Category, 
-            id=category_id
-        )
+        category = get_object_or_404(Category, id=category_id)
         context["category"] = category
+        # セッションに保存(プレビュー後の画面推移に使用)
+        self.request.session['category_id'] = category.id
+
         return context
         
+    def form_valid(self, form):
+        title = form.cleaned_data['title']
+        current_level = form.cleaned_data['current_level']
+        target_level = form.cleaned_data['target_level']
+        # 学習タスクを生成
+        generated_tasks = ai_generate_learning_task(title, current_level, target_level)
+        # セッションに保存
+        self.request.session['generated_tasks'] = generated_tasks
+        self.request.session['title'] = title
+        self.request.session['current_level'] = current_level
+        self.request.session['target_level'] = target_level
+
+        return super().form_valid(form)
+
+
+# 生成された学習タスクの確認
+class PreviewGeneratedTask(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'task_manager/preview_of_the_generated_task.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        category_id = self.request.session.get('category_id')
+
+        context['category_id'] = category_id
+        context["title"] = self.request.session.get('title')
+        context['generated_tasks'] = self.request.session.get('generated_tasks')
+
+        return context
+
+
+# 学習タスク保存
+class SaveLearningTask(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+
+        # ユーザーが入力した学習目標の設定をセッションから取得
+        title = request.session.get('title')
+        current_level = request.session.get('current_level')
+        target_level = request.session.get('target_level')
+        
+        # 学習目標が属するカテゴリを取得
+        category_id = request.session.get('category_id')
+        category = get_object_or_404(Category, id=category_id)
+
+        # 学習目標保存
+        learning_objective = LearningObjective.objects.create(
+            user=request.user,
+            category=category,
+            title=title,
+            current_level=current_level,
+            target_level=target_level,
+        )
+
+        # トピック名とそのオブジェクトでメイントピックの辞書を作成
+        main_topic_objs = {}
+
+        # 学習タスク保存(main_topic)
+        selected_main_topics = request.POST.getlist('main_topics')
+        for main_topic_name in selected_main_topics:
+            main_topic_obj = LearningMainTopic.objects.create(
+                user=request.user,
+                learning_objective=learning_objective,
+                main_topic=main_topic_name
+            )
+            main_topic_objs[main_topic_name] = main_topic_obj
+
+        # 学習タスク保存(sub_topic)
+        for main_topic_name, main_topic_obj in main_topic_objs.items():
+            # main_topicごとのname属性で取得
+            selected_sub_topics = request.POST.getlist(f'sub_topics_{main_topic_name}')
+            for sub_topic_name in selected_sub_topics:
+                LearningSubTopic.objects.create(
+                    main_topic=main_topic_obj,
+                    sub_topic=sub_topic_name,
+                )
+
+        return redirect('task_manager:learning_objective_list', category_id=category_id )
+
 
 # 学習目標削除
 class DeleteLerningObjectiveView(LoginRequiredMixin, generic.DeleteView):

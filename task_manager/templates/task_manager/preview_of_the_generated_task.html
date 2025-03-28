@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static "css/clean_blog.css" %}">
+    <link rel="stylesheet" href="{% static "css/mystyle.css" %}">
+{% endblock head %}
+
+{% block title %}学習タスク生成|First App{% endblock title %}
+
+{% block contents %}
+<div class='container my-div-style'>
+    <div class='row'>
+        <div>
+            <h1 class='h-25'>学習タスクの生成</h1>
+            <h2><strong>"{{ title }}"</strong>の学習タスクが生成されました。</h2>
+            <p>不要なトピックがあれば、チェックを外してください。決定を押すと学習目標とタスクが登録されます。</p>
+        </div>
+        <form action="{% url 'task_manager:save_learning_task' category_id %}" method='POST'>
+            {% csrf_token %}
+
+            {% for topic in request.session.generated_tasks %}
+                <div class='d-flex align-items-center'>
+                    <input type="checkbox" name='main_topics' value={{ topic.main_topic }} checked>
+                    <h3 style='margin-left: 10px'>{{ topic.main_topic }}</h3>
+                </div>  
+                <ul>
+                    {% for sub_topic in topic.sub_topics %}
+                        <li class='d-flex align-items-center'>
+                            <input type="checkbox" name='sub_topics_{{ topic.main_topic }}' value={{ sub_topic.sub_topic }} checked>
+                            <span style='margin-left: 10px'>{{ sub_topic.sub_topic }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% empty %}
+                <p>学習プランの生成に失敗しました。再度学習目標の設定からやり直してください。</p>
+                <a href="#">やり直す</a>
+            {% endfor %}
+            <div class='d-flex'>
+                <button class='btn btn-primary'>決定</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock contents %}

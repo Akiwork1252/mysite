@@ -61,6 +61,7 @@ def ai_generate_learning_task(title, current_level='', target_level=''):
 
     # 不要な出力を削除
     raw_content = raw_content.replace('```json', '').replace('```', '').strip()
+    print(f'raw_content: {raw_content}')
 
     if not raw_content:
         print('AIから空のレスポンスが返されました。')
@@ -71,17 +72,18 @@ def ai_generate_learning_task(title, current_level='', target_level=''):
 
     if not json_match:
         print('JSONデータが見つかりませんでした。')
-        generated_topic = []
+        generated_task = []
     else:
         # JSON部分を解析
         json_str = json_match.group(0)
         try:
-            generated_topic = json.loads(json_str)
+            generated_task = json.loads(json_str)
         except json.JSONDecodeError:
             print('JSONの解析に失敗しました。')
-            generated_topic = []
+            generated_task = []
+    print(f'generated_task:  {generated_task}')
 
-    return generated_topic
+    return generated_task
         
 
 
@@ -89,4 +91,3 @@ if __name__ == '__main__':
     title = 'Python株価予測'
     current_level = 'Python未経験'
     target_level = ''
-    generate_learning_topic(title, current_level)
