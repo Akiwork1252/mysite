@@ -31,8 +31,8 @@ class InquiryView(generic.FormView):
         logger.info(f'Inquiry sent by {name}')
         return super().form_valid(form)
 
-
-# 興味カテゴリリスト表示
+# ========== 興味カテゴリ ==========
+# リスト表示
 class InterestCategoryListView(LoginRequiredMixin, generic.ListView):
     template_name = 'task_manager/interest_category_list.html'
     context_object_name = 'interest_categories'
@@ -41,7 +41,7 @@ class InterestCategoryListView(LoginRequiredMixin, generic.ListView):
         return self.request.user.interest_categories.all()
 
 
-# 興味カテゴリ追加
+# 追加
 class AddInterestCategoryView(LoginRequiredMixin, generic.FormView):
     form_class = AddInterestCategoryForm
     template_name = 'task_manager/add_interest_category.html'
@@ -54,7 +54,7 @@ class AddInterestCategoryView(LoginRequiredMixin, generic.FormView):
         return super().form_valid(form)
 
 
-# 興味カテゴリ(関連付け)削除
+# 削除
 class DeleteInterestCategory(LoginRequiredMixin, generic.DeleteView):
     model = UserInterestCategory
     template_name = 'task_manager/confirm_delete_category.html'
@@ -69,7 +69,8 @@ class DeleteInterestCategory(LoginRequiredMixin, generic.DeleteView):
         )
 
 
-# 学習目標リスト表示
+# ========== 学習目標 ==========
+# リスト表示
 class LearningObjectiveListView(LoginRequiredMixin, generic.ListView):
     model = LearningObjective
     context_object_name = 'learning_objectives'
@@ -89,7 +90,7 @@ class LearningObjectiveListView(LoginRequiredMixin, generic.ListView):
         )
 
 
-# 学習目標設定
+# 目標設定 + タスク生成
 class SettingLearningObjectiveView(LoginRequiredMixin, generic.FormView):
     form_class = SettingLearningObjectiveForm
     template_name = 'task_manager/setting_learning_objective.html'
@@ -120,7 +121,7 @@ class SettingLearningObjectiveView(LoginRequiredMixin, generic.FormView):
         return super().form_valid(form)
 
 
-# 生成された学習タスクの確認
+# 生成タスクの確認、決定
 class PreviewGeneratedTask(LoginRequiredMixin, generic.TemplateView):
     template_name = 'task_manager/preview_of_the_generated_task.html'
 
@@ -136,7 +137,7 @@ class PreviewGeneratedTask(LoginRequiredMixin, generic.TemplateView):
         return context
 
 
-# 学習タスク保存
+# 学習目標・学習タスクの保存
 class SaveLearningTask(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
 
@@ -157,6 +158,9 @@ class SaveLearningTask(LoginRequiredMixin, View):
             current_level=current_level,
             target_level=target_level,
         )
+
+        # リダイレクト用に学習目標idを取得
+        learning_objective_id = learning_objective.id
 
         # トピック名とそのオブジェクトでメイントピックの辞書を作成
         main_topic_objs = {}
@@ -181,7 +185,7 @@ class SaveLearningTask(LoginRequiredMixin, View):
                     sub_topic=sub_topic_name,
                 )
 
-        return redirect('task_manager:learning_objective_list', category_id=category_id )
+        return redirect('task_manager:learning_task_list', learning_objective_id=learning_objective_id )
 
 
 # 学習目標削除
@@ -196,3 +200,45 @@ class DeleteLerningObjectiveView(LoginRequiredMixin, generic.DeleteView):
             user=self.request.user,
             learning_objective_id=learning_objective_id,
         )
+
+
+# ========== 学習タスク ==========
+# リスト表示
+class LearningTaskListView(LoginRequiredMixin, generic.ListView):
+    model = LearningMainTopic
+    template_name = 'task_manager/learning_task_list.html'
+
+
+    def get_queryset(self):
+
+        # 学習目標idをURLから取得
+        learning_objective_id = self.kwargs['learning_objective_id']
+
+        return LearningMainTopic.objects.filter(
+            user=self.request.user,
+            learning_objective__id=learning_objective_id,
+        )
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # 学習目標の取得
+        learning_objective = get_object_or_404(
+            LearningObjective, 
+            id=self.kwargs['learning_objective_id']
+        )
+        context['learning_objective'] = learning_objective
+
+        # main_topicの取得
+        main_topics = LearningMainTopic.objects.filter(
+            user=self.request.user, 
+            learning_objective=learning_objective
+        )
+        
+        # 各main_topicに紐づくsub_topicを全て取得してリストに追加
+        sub_topics = LearningSubTopic.objects.filter(
+            main_topic__in=main_topics
+        )
+        context['sub_topics'] = sub_topics
+
+        return context
