@@ -4,18 +4,18 @@
 {% block title %}学習目標削除|First App{% endblock title %}
 
 {% block contents %}
-<div>
-    <div>
+<div class='container my-div-style'>
+    <div class='row'>
         <div>
-            <h1 class='h-25'>学習目標の削除 ~{{ object.category.name }}~</h1>
+            <h1 class='h-25'>学習目標の削除 ~{{ object.category.name }}カテゴリ~</h1>
             <h2>本当に<strong>"{{ object.title }}"</strong>を削除しますか？</h2>
             <p>削除すると、"{{ object.title }}"の学習記録も削除されます。</p>
         </div>
         <form action="" method='POST'>
             {% csrf_token %}
 
-            <button class='btn btn-danger'>削除</button>
-            <a href="{% url 'task_manager:learning_objective_list'  %}">キャンセル</a>
+            <button class='btn btn-danger m-3'>削除</button>
+            <a class='text-secondary' href="{% url 'task_manager:learning_objective_list' object.category.id %}">キャンセル</a>
         </form>
     </div>
 </div>

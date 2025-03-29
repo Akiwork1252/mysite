@@ -3,7 +3,7 @@ import logging
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views import generic, View
 
 from .forms import InquiryForm, AddInterestCategoryForm, SettingLearningObjectiveForm
@@ -191,15 +191,20 @@ class SaveLearningTask(LoginRequiredMixin, View):
 # 学習目標削除
 class DeleteLerningObjectiveView(LoginRequiredMixin, generic.DeleteView):
     model = LearningObjective
-    template_name = 'tesk_manager/confirm_delete_learning_objective.html'
+    template_name = 'task_manager/confirm_delete_learning_objective.html'
    
     def get_object(self, queryset = ...):
         learning_objective_id = self.kwargs['learning_objective_id']
         return get_object_or_404(
             LearningObjective,
             user=self.request.user,
-            learning_objective_id=learning_objective_id,
+            id=learning_objective_id,
         )
+    
+    def get_success_url(self):
+        category_id = self.object.category.id
+        messages.success(self.request, '削除しました。')
+        return reverse('task_manager:learning_objective_list', kwargs={'category_id': category_id})
 
 
 # ========== 学習タスク ==========
