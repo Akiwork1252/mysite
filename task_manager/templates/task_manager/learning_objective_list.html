@@ -12,10 +12,10 @@
 <div class='container my-div-style'>
     <div class='row'>
         <div>
-            <h1 class='h-100'>{{ user.username }} さんの学習目標 <strong>~ {{ category.name }} ~</strong></h1>
+            <h1 class=''>{{ user.username }} さんの学習目標 <strong>~ {{ category.name }} ~</strong></h1>
         </div>
         {% for learning_objective in object_list %}
-            <div>
+            <div class=''>
                 <a href="{% url 'task_manager:learning_task_list' learning_objective.id %}">
                     <li>{{ learning_objective.title }}</li>
                 </a>
