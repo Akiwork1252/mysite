@@ -19,4 +19,6 @@ urlpatterns = [
     path('preview_generated_task/', views.PreviewGeneratedTask.as_view(), name='preview_generated_task'),
     path('save_learning_task/<int:category_id>', views.SaveLearningTask.as_view(), name='save_learning_task'),
     path('delete_learning_objective/<int:learning_objective_id>/', views.DeleteLerningObjectiveView.as_view(), name='delete_learning_objective'),
+    # 学習タスク
+    path('learning_task_list/<int:learning_objective_id>/', views.LearningTaskListView.as_view(), name='learning_task_list'),
 ]

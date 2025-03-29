@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static "css/clean_blog.css" %}">
+    <link rel="stylesheet" href="{% static "css/mystyle.css" %}">
+{% endblock head %}
+
+{% block title %}学習タスク|First App{% endblock title %}
+
+{% block contents %}
+<div class='container my-div-style'>
+    <div class='row'>
+        <div class='h-25'>
+            <h1 class=''><strong>"{{ learning_objective.title }}"</strong>の学習タスク</h1>
+        </div>
+        <div>
+            {% for main_topic in object_list %}
+                <h3>{{ main_topic.main_topic }}</h3>
+                <ul>
+                    {% for sub_topic in sub_topics %}
+                        {% if sub_topic.main_topic_id == main_topic.id %}
+                            <li>{{ sub_topic.sub_topic }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock contents %}

@@ -16,7 +16,7 @@
         </div>
         {% for learning_objective in object_list %}
             <div>
-                <a href="#">
+                <a href="{% url 'task_manager:learning_task_list' learning_objective.id %}">
                     <li>{{ learning_objective.title }}</li>
                 </a>
                 <a class='btn btn-sm' href="{% url 'task_manager:delete_learning_objective' learning_objective.id %}">削除</a>
