@@ -20,7 +20,9 @@
                 <ul>
                     {% for sub_topic in sub_topics %}
                         {% if sub_topic.main_topic_id == main_topic.id %}
-                            <li>{{ sub_topic.sub_topic }}</li>
+                            <a href="{% url 'learning:learning' sub_topic.id %}">
+                                <li>{{ sub_topic.sub_topic }}</li>
+                            </a>
                         {% endif %}
                     {% endfor %}
                 </ul>

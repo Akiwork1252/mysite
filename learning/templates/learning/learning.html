@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static "css/cleac_blog.css" %}">
+    <link rel="stylesheet" href="{% static "css/mystyle.css" %}">
+{% endblock head %}
+
+{% block title %}レクチャー|First App{% endblock title %}
+
+{% block contents %}
+<div class='container my-div-style'>
+    <div>
+        <div>
+            <h1>hello {{ learning_topic.sub_topic }}</h1>
+        </div>
+    </div>
+</div>
+{% endblock contents %}
