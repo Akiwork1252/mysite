@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'analysis.apps.AnalysisConfig',
     'ai_support.apps.AiSupportConfig',
+    'learning.apps.LearningConfig',
 
     'django.contrib.sites',
     'allauth',

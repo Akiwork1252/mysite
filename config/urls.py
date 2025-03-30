@@ -9,6 +9,7 @@ urlpatterns = [
     path('', include('task_manager.urls')),
     path('accounts/', include('allauth.urls')),
     path('ai_support/', include('ai_support.urls')),
+    path('learning/', include('learning.urls')),
 ]
 
 if settings.DEBUG:
