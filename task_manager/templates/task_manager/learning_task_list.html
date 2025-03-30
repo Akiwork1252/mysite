@@ -15,14 +15,37 @@
             <h1 class=''><strong>"{{ learning_objective.title }}"</strong>の学習タスク</h1>
         </div>
         <div>
+            <a class='btn btn-primary btn-sm me-3' href="#">講義</a>
+            <a class='btn btn-primary btn-sm' href="#">総合問題</a>
+        </div>
+        <div>
             {% for main_topic in object_list %}
-                <h3>{{ main_topic.main_topic }}</h3>
+                <hr>
+                <div class='d-flex m-3'>
+                    <div>
+                        <h3 class='m-0 me-3' >{{ main_topic.main_topic }}</h3>
+                    </div>
+                    <div>
+                        <a class='btn btn-primary btn-sm' href="#">選択問題</a>
+                        <a class='btn btn-primary btn-sm' href="#">記述問題</a>
+                    </div>
+                </div>
                 <ul>
                     {% for sub_topic in sub_topics %}
                         {% if sub_topic.main_topic_id == main_topic.id %}
-                            <a href="{% url 'learning:learning' sub_topic.id %}">
-                                <li>{{ sub_topic.sub_topic }}</li>
-                            </a>
+                            <hr>
+                            <div class='d-flex m-2'>
+                                <div>
+                                    <a href="{% url 'learning:learning' sub_topic.id %}">
+                                        <li class='me-3'>{{ sub_topic.sub_topic }}</li>
+                                    </a>
+                                </div>
+                                <div class='justify-content-center'>
+                                    <a class='btn btn-dark btn-sm me-2' href="#">講義</a>
+                                    <a class='btn btn-dark btn-sm me-2' href="#">選択問題</a>
+                                    <a class='btn btn-dark btn-sm me-2' href="#">記述問題</a>
+                                </div>
+                            </div>
                         {% endif %}
                     {% endfor %}
                 </ul>
