@@ -4,11 +4,14 @@ import re
 
 from dotenv import load_dotenv
 from openai import OpenAI
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+
 
 
 load_dotenv()
 
-# 学習トピック作成
+# ==== タスク作成 ====
 def ai_generate_learning_task(title, current_level='', target_level=''):
 
     client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
@@ -85,6 +88,23 @@ def ai_generate_learning_task(title, current_level='', target_level=''):
 
     return generated_task
         
+
+# ==== 講義 ====
+def lectures_by_ai(title, user_input):
+    
+    def get(self, request, *args, **kwargs):
+        
+        llm = ChatOpenAI(
+            model='gpt-4o-mini',
+            temperature=0.7,
+            max_completion_tokens=1000,
+        )
+
+        prompt_template = ChatPromptTemplate.from_template(
+            
+        )
+
+    
 
 
 if __name__ == '__main__':
