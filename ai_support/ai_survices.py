@@ -93,7 +93,6 @@ def ai_generate_learning_task(title, current_level='', target_level=''):
 def lectures_by_ai(title, user_input):
     
     def get(self, request, *args, **kwargs):
-        
         llm = ChatOpenAI(
             model='gpt-4o-mini',
             temperature=0.7,
@@ -101,7 +100,10 @@ def lectures_by_ai(title, user_input):
         )
 
         prompt_template = ChatPromptTemplate.from_template(
-            
+            'あなたは優秀な教師です。以下のタイトルに基づいて講義を行なってください。\n'
+            'タイトル:{title}\n'
+            '出力は以下のルールに基づいて行なってください。'
+            '<ルール>\n'
         )
 
     
