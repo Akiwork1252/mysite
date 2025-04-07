@@ -15,7 +15,7 @@
             <h1 class=''><strong>"{{ learning_objective.title }}"</strong>の学習タスク</h1>
         </div>
         <div>
-            <a class='btn btn-primary btn-sm me-3' href="#">講義</a>
+            <a class='btn btn-primary btn-sm me-3' href="{% url 'learning:learning' learning_objective.id %}">講義</a>
             <a class='btn btn-primary btn-sm' href="#">総合問題</a>
         </div>
         <div>
