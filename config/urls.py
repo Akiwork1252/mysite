@@ -10,6 +10,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('ai_support/', include('ai_support.urls')),
     path('learning/', include('learning.urls')),
+    path('exam/', include('exam.urls')),
 ]
 
 if settings.DEBUG:
