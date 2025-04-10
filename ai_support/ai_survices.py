@@ -11,7 +11,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 load_dotenv()
 
-# ==== タスク作成 ====
+# タスク生成
 def ai_generate_learning_task(title, current_level='', target_level=''):
 
     client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
@@ -53,7 +53,7 @@ def ai_generate_learning_task(title, current_level='', target_level=''):
     response = client.chat.completions.create(
         model='gpt-4o-mini',
         messages=[
-            {'role': 'system', 'content': 'あなたは数学者です。'},
+            {'role': 'system', 'content': 'あなたは最適な学習プランを提案するAIアシスタントです。'},
             {'role': 'user', 'content': prompt}
         ],
         max_tokens=1000,
@@ -89,27 +89,44 @@ def ai_generate_learning_task(title, current_level='', target_level=''):
     return generated_task
         
 
-# ==== 講義 ====
+# レクチャー生成
 def lectures_by_ai(title, user_input):
-    
-    def get(self, request, *args, **kwargs):
-        llm = ChatOpenAI(
-            model='gpt-4o-mini',
-            temperature=0.7,
-            max_completion_tokens=1000,
-        )
+    llm = ChatOpenAI(
+        model='gpt-4o-mini',
+        temperature=0.7,
+        max_completion_tokens=1000,
+    )
 
-        prompt_template = ChatPromptTemplate.from_template(
-            'あなたは優秀な教師です。以下のタイトルに基づいて講義を行なってください。\n'
-            'タイトル:{title}\n'
-            '出力は以下のルールに基づいて行なってください。'
-            '<ルール>\n'
-        )
+    prompt_template = ChatPromptTemplate.from_template(
+        'あなたは優秀な教師です。以下のタイトルに基づいて講義を行なってください。\n'
+        'タイトル:{title}\n'
+        '出力は以下のルールに基づいて行なってください。'
+        '<ルール>\n'
+        '1,講義前にトピックを列挙して、改行を入れる。'
+        '2,１つのトピックを説明したら改行を入れる'
+        '3,pythonなどのコードを入れる場合は、改行を入れてから、python:〜として始める'
+    )
+
+    prompt = prompt_template.format_prompt(title=title, user_input=user_input)
+    print(f'prompt: {prompt}')
+
+    response = llm.invoke(prompt.to_string())
+    print(f'response: {response}')
+    print(f'return: {response.content}')
+
+    if not response.content.strip():
+        return '問題が発生しました。'
+    
+    return response.content
 
     
 
 
 if __name__ == '__main__':
-    title = 'Python株価予測'
+    title = 'Python基礎文法(変数)'
     current_level = 'Python未経験'
     target_level = ''
+    user_input = ''
+
+    response = lectures_by_ai(title, user_input)
+    print(response)
