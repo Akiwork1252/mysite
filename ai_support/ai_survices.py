@@ -4,6 +4,7 @@ import re
 
 from dotenv import load_dotenv
 from openai import OpenAI
+from langchain.chains.llm import LLMChain
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -118,7 +119,7 @@ def lectures_by_ai(title, user_input):
     return response.content
 
 
-# 選択問題生成
+# 問題生成(選択式)
 def generate_multipul_choice_question(title, previous_question=''):
     llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.7, max_completion_tokens=1000)
     
@@ -152,8 +153,58 @@ def generate_multipul_choice_question(title, previous_question=''):
     return response.content
 
 
-# 記述問題を生成
-def generate_written_question(title):
+# 採点(選択問題)
+def grade_multiple_choice_question(question, answer):
+    print(f'Question: {question}\nAnswer: {answer}')
+
+    prompt_text = (
+        'あなたは優秀な教師です。以下は出題された選択問題とユーザーの回答です。\n'
+        'Question:{question}\n'
+        'Answer:{answer}\n'
+        '採点は、正解:2pt、不正解:0ptとし、float型で返してください。\n'
+        'スコアと解説を出力例のように辞書型のみで出力してください(必須)。\n'
+        '出力例:{{"score": スコア, "explanation": 解説}}'
+    )
+
+    prompt_template = ChatPromptTemplate.from_template(prompt_text)
+    llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.2)
+    chain = LLMChain(prompt=prompt_template, llm=llm)
+
+    response = chain.invoke({
+        'question': question,
+        'answer': answer
+    })
+
+    # AIの出力を辞書型に変換
+    try:
+        result = json.loads(response['text'])
+    except json.JSONDecodeError:
+        raise ValueError(f'AIの出力を辞書型に変換できません。')
+    
+    # 出力が辞書型か確認
+    if not isinstance(result, dict):
+        raise ValueError(f'AIの出力が辞書型ではありません。{result}')
+
+    # 辞書に必要なキーが含まれているか確認
+    required_keys = ['score', 'explanation']
+    for key in required_keys:
+        if key not in result:
+            raise KeyError(f'必要なキー {key} が出力に含まれていません。')
+    
+    # scoreがfloat型か確認
+    if not isinstance(result.get('score'), float):
+        try:
+            result['score'] = float(result['score'])
+        except (TypeError, ValueError):
+            raise ValueError(f'scoreの値をfloat型に変換できません。: {result["score"]}')
+
+    print(f'return: {result}')
+
+    return result
+
+
+# 問題生成(記述式)
+def generate_constructed_question(title):
     llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.7, max_completion_tokens=1000)
     prompt_text = (
         'あなたは優秀な教師です。以下のタイトルに関する記述問題を生成してください。'
@@ -171,6 +222,54 @@ def generate_written_question(title):
     return response.content
 
 
+# 採点(記述問題)
+def grade_constructed_question(question, answer):
+    print(f'Question: {question}\nAnswer: {answer}')
+
+    prompt_text = (
+        'あなたは優秀な教師です。以下は出題された選択問題とユーザーの回答です。\n'
+        'Question:{question}\n'
+        'Answer:{answer}\n'
+        'スコアと解説を出力例のように辞書型のみで出力してください(必須)。\n'
+        '出力例:{{"score": スコア, "explanation": 解説}}\n' 
+        'スコア:最大100ptとし、float型で返してください。\n'
+        '解説:コーディング問題の場合は、以下の採点基準を元に採点を行い、改行を入れて読みやすく、詳細に記述してください。\n' 
+        '採点基準:正確性(/40pt)、設計(/20pt)、読みやすさ(/20pt)、ベストプラクティス(/20pt)'
+    )
+
+    prompt_template = ChatPromptTemplate.from_template(prompt_text)
+    llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.2)
+    chain = LLMChain(prompt=prompt_template, llm=llm)
+    response = chain.invoke({
+        'question': question,
+        'answer': answer
+    })
+
+    # 出力を辞書型に変換
+    try:
+        result = json.loads(response['text'])
+    except json.JSONDecodeError:
+        raise ValueError(f'AIの出力を辞書型に変換できません。')
+    
+    # 出力が辞書型か確認
+    if not isinstance(result, dict):
+        raise ValueError(f'AIの出力が辞書型ではありません。: {result}')
+    
+    # 辞書に必要なキーが含まれているか確認
+    required_keys = ['score', 'explanation']
+    for key in required_keys:
+        if not key in result:
+            raise KeyError(f'必要なキー {key} が出力に含まれていません。')
+
+    # scoreがfloat型か確認
+    if not isinstance(result.get('score'), float):
+        try:
+            result['score'] = float(result['score'])
+        except (TypeError, ValueError):
+            raise ValueError(f'scoreの値をfloat型に変換できません。: {result["score"]}')
+    print(result)    
+    
+    return result
 
 if __name__ == '__main__':
     title = 'Python基礎文法(ループ)'
@@ -178,5 +277,21 @@ if __name__ == '__main__':
     target_level = ''
     user_input = ''
 
-    # generate_multipul_choice_question(title)
-    generate_written_question(title)
+    question = '''Pythonでforループを使用して、リストの各要素を出力するための正しい構文はどれですか
+a): for item in list: print(item)  
+b): for (item in list) { print(item); }  
+c): foreach item in list: print(item)  
+d): for item: list print(item)  
+'''
+    question_2 = '''
+Pythonを使用して、1から100までの整数の合計を計算するプログラムを作成してください。ただし、ループを使用して実装すること。合計を出力する際には、「合計は: 合計値」という形式で表示してください。
+'''
+    answer = 'a'
+    answer_2 = '''
+    result = 0
+    for num in range(1, 101):
+        result += num
+    
+    print(f'合計値: {result}')
+'''
+    grade_constructed_question(question_2, answer_2)
