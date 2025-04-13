@@ -91,13 +91,9 @@ def ai_generate_learning_task(title, current_level='', target_level=''):
 
 # レクチャー生成
 def lectures_by_ai(title, user_input):
-    llm = ChatOpenAI(
-        model='gpt-4o-mini',
-        temperature=0.7,
-        max_completion_tokens=1000,
-    )
+    llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.7, max_completion_tokens=1000,)
 
-    prompt_template = ChatPromptTemplate.from_template(
+    prompt_text = (
         'あなたは優秀な教師です。以下のタイトルに基づいて講義を行なってください。\n'
         'タイトル:{title}\n'
         '出力は以下のルールに基づいて行なってください。'
@@ -107,6 +103,8 @@ def lectures_by_ai(title, user_input):
         '3,pythonなどのコードを入れる場合は、改行を入れてから、python:〜として始める'
     )
 
+    prompt_template = ChatPromptTemplate.from_template(prompt_text)
+    print(f'prompt_template: {prompt_template}')
     prompt = prompt_template.format_prompt(title=title, user_input=user_input)
     print(f'prompt: {prompt}')
 
@@ -119,14 +117,66 @@ def lectures_by_ai(title, user_input):
     
     return response.content
 
+
+# 選択問題生成
+def generate_multipul_choice_question(title, previous_question=''):
+    llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.7, max_completion_tokens=1000)
     
+    if previous_question:
+        prompt_text = (
+            'あなたは優秀な教師です。以下のタイトルに関する選択問題を1問生成してください。'
+            '前回の問題と内容が重複しないようにしてください。\n'
+            'タイトル:{title}\n'
+            '前回の問題:{previous_question}\n'
+            '出力例のように改行を入れて出力してください。(必須)\n'
+            '<出力例>'
+            'Question: 生成した問題\n'
+            'a): 生成した選択肢\n'
+        )
+    else:
+        prompt_text = (
+            'あなたは優秀な教師です。以下のタイトルに関する選択問題を1問生成してください。'
+            'タイトル:{title}\n'
+            '出力例のように改行を入れて出力してください。(必須)\n'
+            '<出力例>'
+            'Question: 生成した問題\n'
+            'a): 生成した選択肢\n'
+        )
+
+    prompt_template = ChatPromptTemplate.from_template(prompt_text)
+    prompt = prompt_template.format_prompt(title=title, previous_question=previous_question)
+    response = llm.invoke(prompt.to_string())
+    print(f'response: {response}')
+    print(f'return: {response.content}')
+
+    return response.content
+
+
+# 記述問題を生成
+def generate_written_question(title):
+    llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.7, max_completion_tokens=1000)
+    prompt_text = (
+        'あなたは優秀な教師です。以下のタイトルに関する記述問題を生成してください。'
+        'プログラミングの場合は、コーディング問題を生成してください。'
+        'タイトル:{title}\n'
+        '出力例\n'
+        'Question: 生成した問題\n'
+    )
+    prompt_template = ChatPromptTemplate.from_template(prompt_text)
+    prompt = prompt_template.format_prompt(title=title)
+    response = llm.invoke(prompt.to_string())
+    print(f'response: {response}')
+    print(f'return: {response.content}')
+
+    return response.content
+
 
 
 if __name__ == '__main__':
-    title = 'Python基礎文法(変数)'
+    title = 'Python基礎文法(ループ)'
     current_level = 'Python未経験'
     target_level = ''
     user_input = ''
 
-    response = lectures_by_ai(title, user_input)
-    print(response)
+    # generate_multipul_choice_question(title)
+    generate_written_question(title)
