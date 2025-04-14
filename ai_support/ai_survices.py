@@ -12,6 +12,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 load_dotenv()
 
+
 # タスク生成
 def ai_generate_learning_task(title, current_level='', target_level=''):
 
@@ -119,7 +120,7 @@ def lectures_by_ai(title, user_input):
     return response.content
 
 
-# 問題生成(選択式)
+# 選択問題を生成
 def generate_multipul_choice_question(title, previous_question=''):
     llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.7, max_completion_tokens=1000)
     
@@ -153,7 +154,7 @@ def generate_multipul_choice_question(title, previous_question=''):
     return response.content
 
 
-# 採点(選択問題)
+# 選択問題の回答を採点
 def grade_multiple_choice_question(question, answer):
     print(f'Question: {question}\nAnswer: {answer}')
 
@@ -203,7 +204,7 @@ def grade_multiple_choice_question(question, answer):
     return result
 
 
-# 問題生成(記述式)
+# 記述問題を生成
 def generate_constructed_question(title):
     llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.7, max_completion_tokens=1000)
     prompt_text = (
@@ -222,7 +223,7 @@ def generate_constructed_question(title):
     return response.content
 
 
-# 採点(記述問題)
+# 記述問題と総合問題を採点
 def grade_constructed_question(question, answer):
     print(f'Question: {question}\nAnswer: {answer}')
 
@@ -271,11 +272,38 @@ def grade_constructed_question(question, answer):
     
     return result
 
+
+# 総合問題を生成
+def generate_integrated_question(titles):
+    # list -> str
+    titles_str = ', '.join(titles)
+
+    prompt_text = (
+        'あなたは優秀な教師です。ユーザーは以下のタイトル一覧の学習を終えました。'
+        'これらの内容が混在した総合記述問題を1問生成してください。\n'
+        'タイトル一覧:{titles}'
+        '出力例\n'
+        'Question: 生成した問題'
+    )
+
+    llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.7)
+    prompt_template = ChatPromptTemplate.from_template(prompt_text)
+    chain = LLMChain(prompt=prompt_template, llm=llm)
+    response = chain.invoke({
+        'titles': titles
+    })
+    print(response['text'])
+
+    return response['text']
+
+
+
 if __name__ == '__main__':
     title = 'Python基礎文法(ループ)'
     current_level = 'Python未経験'
     target_level = ''
     user_input = ''
+    titles = ['python基礎(変数)', 'python基礎(データ型)', 'python基礎(if, for, while)', 'python基礎(関数)', 'python基礎(クラス)']
 
     question = '''Pythonでforループを使用して、リストの各要素を出力するための正しい構文はどれですか
 a): for item in list: print(item)  
@@ -294,4 +322,5 @@ Pythonを使用して、1から100までの整数の合計を計算するプロ�
     
     print(f'合計値: {result}')
 '''
-    grade_constructed_question(question_2, answer_2)
+    # grade_constructed_question(question_2, answer_2)
+    generate_integrated_question(titles)
