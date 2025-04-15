@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block head %}
+    <meta name='csrf-token' content='{{ csrf_token }}'>
     <link rel="stylesheet" href="{% static "css/cleac_blog.css" %}">
     <link rel="stylesheet" href="{% static "css/mystyle.css" %}">
 {% endblock head %}
@@ -9,11 +10,28 @@
 {% block title %}レクチャー|First App{% endblock title %}
 
 {% block contents %}
-<div class='container my-div-style'>
-    <div>
+<div class='container'>
+    <div class='my-div-style'>
         <div>
-            <h1>hello {{ learning_title.sub_topic }}</h1>
+            <h1>講義 ~ {{ learning_topic.sub_topic }} ~</h1>
+            <p><strong>{{ learning_topic.sub_topic }}</strong>の講義を始めます。</p>
+            <p>質問があればチャット画面に入力して<strong>送信ボタン</strong>を押してください。</p>
+            <p><strong>終了ボタン</strong>を押すとレクチャーを終了します。</p>
         </div>
+        <!-- Chat -->
+        <div id='chat-box' class='border'>
+            <div class=''>
+                <strong>AI:</strong>
+                {{ ai_lecture|safe }}
+            </div>
+        </div>
+        <form id='chat-form' data-url="{% url 'learning:learning' learning_topic.id %}">
+            <input id='message-input' type="text" class='form-control' placeholder='メッセージを入力' required>
+            <div>
+                <button type='submit' class='btn btn-primary'>送信</button>
+                <button id='end-lecture' type='button' class='btn btn-primary'>終了</button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock contents %}
