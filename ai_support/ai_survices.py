@@ -95,15 +95,17 @@ def generate_learning_task(title, current_level='', target_level=''):
 def lectures_by_ai(title, user_input=''):
     llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.7, max_completion_tokens=1000,)
 
-    prompt_text = (
-        'あなたは優秀な教師です。以下のタイトルに基づいて講義を行なってください。\n'
-        'タイトル:{title}\n'
-        '出力は以下のルールに基づいて行なってください。'
-        '<ルール>\n'
-        '1,講義前にトピックを列挙して、改行を入れる。'
-        '2,１つのトピックを説明したら改行を入れる'
-        '3,pythonなどのコードを入れる場合は、改行を入れてから、python:〜として始める'
-    )
+    if not user_input:
+        prompt_text = (
+            'あなたは優秀な教師です。以下のタイトルに基づいて講義を行なってください。\n'
+            'タイトル:{title}\n'
+            '出力は以下のルールに基づいて行なってください。'
+            '<ルール>\n'
+            '1,講義前にトピックを列挙して、改行を入れる。'
+            '2,１つのトピックを説明したら改行を入れる'
+            '3,pythonなどのコードを入れる場合は、改行を入れてから、python:〜として始める'
+        )
+    
 
     prompt_template = ChatPromptTemplate.from_template(prompt_text)
     print(f'prompt_template: {prompt_template}')
