@@ -22,7 +22,7 @@
         <div id='chat-box' class='border'>
             <div class=''>
                 <strong>AI:</strong>
-                {{ ai_lecture|safe }}
+                {{ ai_lecture|linebreaksbr }}
             </div>
         </div>
         <form id='chat-form' data-url="{% url 'learning:learning' learning_topic.id %}">
@@ -34,4 +34,6 @@
         </form>
     </div>
 </div>
+
+<script src={% static "js/lecture_chat.js" %}></script>
 {% endblock contents %}
