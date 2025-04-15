@@ -8,7 +8,7 @@ from django.views import generic, View
 
 from .forms import InquiryForm, AddInterestCategoryForm, SettingLearningObjectiveForm
 from .models import Category, UserInterestCategory, LearningObjective, LearningMainTopic, LearningSubTopic
-from ai_support.ai_survices import ai_generate_learning_task
+from ai_support.ai_survices import generate_learning_task
 
 
 logger = logging.getLogger(__name__)
@@ -111,7 +111,7 @@ class SettingLearningObjectiveView(LoginRequiredMixin, generic.FormView):
         current_level = form.cleaned_data['current_level']
         target_level = form.cleaned_data['target_level']
         # 学習タスクを生成
-        generated_tasks = ai_generate_learning_task(title, current_level, target_level)
+        generated_tasks = generate_learning_task(title, current_level, target_level)
         # セッションに保存
         self.request.session['generated_tasks'] = generated_tasks
         self.request.session['title'] = title
