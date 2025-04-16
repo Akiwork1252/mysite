@@ -131,20 +131,23 @@ def lectures_by_ai(title, user_input='', lecture_contents=''):
 
 
 # 選択問題を生成
-def generate_multipul_choice_question(title, previous_question=''):
+def generate_multipul_choice_question(title, previous_questions=None):
     llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.7, max_completion_tokens=1000)
     
-    if previous_question:
+    if previous_questions:
+        question_history = '\n'.join(f'- {q}' for q in previous_questions)
         prompt_text = (
             'あなたは優秀な教師です。以下のタイトルに関する選択問題を1問生成してください。'
-            '前回の問題と内容が重複しないようにしてください。\n'
+            'これまでに出題された問題となるべく内容が重複しないようにしてください。\n'
             'タイトル:{title}\n'
-            '前回の問題:{previous_question}\n'
+            'これまでに出題された問題:{question_history}\n'
             '出力例のように改行を入れて出力してください。(必須)\n'
             '<出力例>'
             'Question: 生成した問題\n'
             'a): 生成した選択肢\n'
         )
+        prompt_template = ChatPromptTemplate.from_template(prompt_text)
+        prompt = prompt_template.format_prompt(title=title, previous_questions=question_history)
     else:
         prompt_text = (
             'あなたは優秀な教師です。以下のタイトルに関する選択問題を1問生成してください。'
@@ -154,9 +157,9 @@ def generate_multipul_choice_question(title, previous_question=''):
             'Question: 生成した問題\n'
             'a): 生成した選択肢\n'
         )
+        prompt_template = ChatPromptTemplate.from_template(prompt_text)
+        prompt = prompt_template.format_prompt(title=title)
 
-    prompt_template = ChatPromptTemplate.from_template(prompt_text)
-    prompt = prompt_template.format_prompt(title=title, previous_question=previous_question)
     response = llm.invoke(prompt.to_string())
     print(f'response: {response}')
     print(f'return: {response.content}')

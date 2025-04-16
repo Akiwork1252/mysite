@@ -7,5 +7,4 @@ from task_manager.models import LearningMainTopic, LearningSubTopic
 
 
 # テスト生成
-def generate_choice_test():
-    pass
+
