@@ -34,3 +34,6 @@ logs/
 
 # バックアップ
 backup/
+
+# 開発メモ
+dev_log.txt
