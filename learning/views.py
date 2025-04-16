@@ -15,7 +15,11 @@ class LearningView(LoginRequiredMixin, View):
         learning_topic_id = self.kwargs['learning_topic']
         learning_topic = get_object_or_404(LearningSubTopic, id=learning_topic_id)
 
+        # AIによる講義を生成
         ai_lecture = lectures_by_ai(learning_topic.sub_topic)
+
+        # 講義内容をセッションに保存
+        request.session['ai_lecture'] = ai_lecture
 
         context = {
             'learning_topic': learning_topic,
@@ -26,7 +30,7 @@ class LearningView(LoginRequiredMixin, View):
 
 
     def post(self, request, *args, **kwargs):
-        # ユーザーの応答を受け取る
+        # ユーザーの入力を受け取る
         user_input = request.POST.get('message', '')
 
         # 講義のオブジェクトを取得
@@ -34,15 +38,18 @@ class LearningView(LoginRequiredMixin, View):
         learning_topic = get_object_or_404(LearningSubTopic, id=learning_topic_id)
         learning_objective_id = learning_topic.main_topic.learning_objective.id
 
-        # AIによる返答
-        lecture_response = lectures_by_ai(title=learning_topic.sub_topic, user_input=user_input)
-
         # チャット終了
         if user_input == '終了':
             return JsonResponse({'redirect_url': reverse(
                 'task_manager:learning_task_list',
                 kwargs={'learning_objective_id': learning_objective_id}
             )})
+        
+        # セッションから講義内容を取得
+        lecture_contents = request.session.get('ai_lecture')
+
+        # AIによる返答
+        lecture_response = lectures_by_ai(title=learning_topic.sub_topic, user_input=user_input, lecture_contents=lecture_contents)
 
         return JsonResponse({'lecture_response': lecture_response})
 

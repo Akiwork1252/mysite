@@ -92,7 +92,7 @@ def generate_learning_task(title, current_level='', target_level=''):
         
 
 # レクチャー生成
-def lectures_by_ai(title, user_input=''):
+def lectures_by_ai(title, user_input='', lecture_contents=''):
     llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.7, max_completion_tokens=1000,)
 
     if not user_input:
@@ -104,6 +104,14 @@ def lectures_by_ai(title, user_input=''):
             '1,講義前にトピックを列挙して、改行を入れる。'
             '2,１つのトピックを説明したら改行を入れる'
             '3,pythonなどのコードを入れる場合は、改行を入れてから、python:〜として始める'
+        )
+    else:
+        prompt_text = (
+            'あなたはユーザーに以下の講義を行いました。\n'
+            'タイトル:{title}\n'
+            '講義内容:{lecture_contents}'
+            'ユーザーから以下の返答がありました。あなたは優秀な教師としてユーザーの疑問点を解決する必要があります。\n'
+            'ユーザー:{user_input}'
         )
     
 

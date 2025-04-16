@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+    <meta name='csrf-token' content={{ csrf_token }}>
+    <link rel="stylesheet" href="{% static "css/clean_blog.html" %}">
+    <link rel="stylesheet" href="{% static "css/mystyle.css" %}">
+{% endblock head %}
+
+
+{% block contents %}
+<div class='container my-div-style'>
+    <div>
+        <div>
+            <h1>選択問題 ~ {{}} ~</h1>
+            <p>
+                <strong>"{{ }}"</strong>から選択問題を出題します。
+            </p>
+        </div>
+        <!-- Chat -->
+        <div id='chat-box'>
+            <div>
+                <strong>Question:</strong>
+            </div>
+        </div>
+        <form id='chat-form' action="">
+            <input id='message-input' type="text">
+            <button type='submit' class='btn btn-primary'>送信</button>
+            <button id='end-exam' type='button' class='btn btn-primary'>終了</button>
+        </form>
+    </div>
+</div>
+{% endblock contents %}
