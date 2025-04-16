@@ -26,8 +26,8 @@
                         <h3 class='m-0 me-3' >{{ main_topic.main_topic }}</h3>
                     </div>
                     <div>
-                        <a class='btn btn-primary btn-sm' href="#">選択問題</a>
-                        <a class='btn btn-primary btn-sm' href="#">記述問題</a>
+                        <a class='btn btn-primary btn-sm' href="{% url 'exam:multiple_choice_questions_main' main_topic.id %}">選択問題</a>
+                        <a class='btn btn-primary btn-sm' href="{% url 'exam:constructed_question_main' main_topic.id %}">記述問題</a>
                     </div>
                 </div>
                 <ul>
@@ -42,8 +42,8 @@
                                 </div>
                                 <div class='justify-content-center'>
                                     <a class='btn btn-dark btn-sm me-2' href="{% url 'learning:learning' sub_topic.id %}">講義</a>
-                                    <a class='btn btn-dark btn-sm me-2' href="{% url 'exam:multiple_choice_questions' sub_topic.id %}">選択問題</a>
-                                    <a class='btn btn-dark btn-sm me-2' href="#">記述問題</a>
+                                    <a class='btn btn-dark btn-sm me-2' href="{% url 'exam:multiple_choice_questions_sub' sub_topic.id %}">選択問題</a>
+                                    <a class='btn btn-dark btn-sm me-2' href="{% url 'exam:constructed_question_sub' sub_topic.id %}">記述問題</a>
                                 </div>
                             </div>
                         {% endif %}
