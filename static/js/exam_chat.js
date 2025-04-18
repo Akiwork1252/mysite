@@ -13,9 +13,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // ユーザーの回答を表示
         const userDiv = document.createElement('div');
-        const strong = document.createElement('strong');
-        strong.textContent = 'Answer: ';
-        userDiv.appendChild(strong);
+        const userStrong = document.createElement('strong');
+        userStrong.textContent = 'Answer: ';
+        userDiv.appendChild(userStrong);
         userDiv.append(`${userAnswer}`);
         chatBox.appendChild(userDiv);
 
@@ -30,7 +30,46 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data => {
-            if ()
-        })
-    })
-})
+            // 採点結果表示
+            const resultContainerDiv = document.createElement('div');
+
+            const scoreDiv = document.createElement('div');
+            scoreDiv.textContent = `Score: ${data.score}`;
+
+            const explanationDiv = document.createElement('div');
+            explanationDiv.textContent = `Explanation: ${data.explanation}`;
+
+            resultContainerDiv.appendChild(scoreDiv);
+            resultContainerDiv.appendChild(explanationDiv);
+            chatBox.appendChild(resultContainerDiv)
+
+            if (data.next_question) {
+                // 次の問題
+                const questionDiv = document.createElement('div');
+                const questionStrong = document.createElement('strong');
+                questionStrong.textContent = 'Question: ';
+                questionDiv.appendChild(questionStrong);
+                questionDiv.append(`${data.next_question}`);
+                chatBox.appendChild(questionDiv);
+            } else if (data.finished) {
+                // 総スコア、メッセージ表示
+                const totalScoreDiv = document.createElement('div');
+                const messageDiv = document.createElement('div');
+                const scoreStrong = document.createElement('strong');
+                const aiStrong = document.createElement('strong')
+                scoreStrong.textContent = 'TotalScore: ';
+                aiStrong.textContent = 'AI: ';
+                totalScoreDiv.appendChild(scoreStrong);
+                totalScoreDiv.append(`${data.totalscore}`);
+                chatBox.appendChild(totalscore);
+                messageDiv.appendChild(aiStrong);
+                messageDiv.append(`${data.message}`);
+                chatBox.appendChild(messageDiv);
+            } else if (data.error) {
+                console.error(data.error);
+            }
+
+            messageInput.value = '';
+        });
+    });
+});
