@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
 from django.views import View, generic
 from django.shortcuts import render, get_object_or_404
 
@@ -12,7 +13,7 @@ from ai_support.ai_survices import (
 from task_manager.models import LearningObjective, LearningMainTopic, LearningSubTopic
 
 
-# 選択問題
+# 選択問題(5問出題)
 class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         url_name = request.resolver_match.url_name
@@ -108,6 +109,7 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
             'question_count': question_count,
         }
 
+        # 次の問題
         if question_count <= 5:
             # 出題履歴を取得
             history = request.session.get('question_history')
@@ -124,11 +126,19 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
             history.append(question)
             request.session['question_history'] = history
 
+            # レスポンスデータに次の問題を追加
             response_data.update({
                 'next_question': question,
             })
 
+        # 終了
+        else:
+            response_data.update({
+                'finished': True,
+                'message': '全5問終了しました。終了ボタンを押してください。お疲れ様でした。',
+            })
 
+        return JsonResponse(response_data)
 
 
 # 記述問題
