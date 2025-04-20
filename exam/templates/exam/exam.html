@@ -14,7 +14,8 @@
         <div>
             <h1>選択問題 ~ {{ learning_objective.title }} ~</h1>
             <p>
-                <strong>"{{ topic }}"</strong>から選択問題を出題します。
+                <strong>"{{ topic }}"</strong>から選択問題を5問出題します。
+                1問正解すると2pt、全て正解で10pt獲得できます。頑張ってください。
             </p>
         </div>
         <!-- Chat -->
@@ -23,7 +24,7 @@
                 {{ question|linebreaksbr }}
             </div>
         </div>
-        <form id='chat-form' action="">
+        <form id='chat-form' data-url='{% url url_name topic_id %}'>
             <input id='message-input' type="text">
             <div>
                 <button type='submit' class='btn btn-primary'>送信</button>
