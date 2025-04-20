@@ -10,6 +10,7 @@ from ai_support.ai_survices import (
     grade_multiple_choice_question,
     grade_constructed_question,
 )
+from analysis.models import Progress
 from task_manager.models import LearningObjective, LearningMainTopic, LearningSubTopic
 
 
@@ -38,6 +39,9 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
             sub_topics_str = ', '.join([sub.sub_topic for sub in sub_topics])
             question = generate_multipul_choice_question(title=sub_topics_str)
 
+            # トピック名をテンプレートに渡す
+            context = {'topic': main_topic.main_topic}
+
         elif 'sub' in url_name:
             # セッションに保存(サブトピックid)
             sub_topic = get_object_or_404(LearningSubTopic, id=topic_id)
@@ -48,9 +52,12 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
             # 問題生成
             question = generate_multipul_choice_question(title=sub_topic.sub_topic)
         
+            # トピック名をテンプレートに渡す
+            context = {'topic': sub_topic.sub_topic}
 
         # セッションに保存(学習目標id、生成された問題)
         learning_objective_id = main_topic.learning_objective.id
+        learning_objective = get_object_or_404(LearningObjective, id=learning_objective_id)
         request.session['learning_objective_id'] = learning_objective_id
 
         if question:
@@ -61,7 +68,7 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
             if 'question_history' not in request.session:
                 request.session['question_history'] = [question]  # 2問目以降の問題生成で使用(問題内容の重複を避けるため)
             else:
-                request.session['question_history'].appned(question)
+                request.session['question_history'].append(question)
 
             request.session['total_score'] = 0
             request.session['question_count'] = 1
@@ -71,7 +78,7 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
 
 
         context = {
-            'learning_objective_id': learning_objective_id,
+            'learning_objective': learning_objective,
             'question': question,
         }
         return render(request, 'exam/exam.html', context)
@@ -116,11 +123,14 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
             if 'main' in url_name:
                 sub_topic_ids = request.session.get('sub_topic_ids')
                 # 問題生成
-                question = generate_multipul_choice_question(title=sub_topic_ids, previous_questions=history)
+                sub_topics = LearningSubTopic.objects.filter(id__in=sub_topic_ids)
+                sub_topics_str = ', '.join([sub.sub_topic for sub in sub_topics])
+                question = generate_multipul_choice_question(title=sub_topics_str, previous_questions=history)
             elif 'sub' in url_name:
                 sub_topic_id = request.session.get('sub_topic_id')
                 # 問題生成
-                question = generate_multipul_choice_question(title=sub_topic_ids, previous_questions=history)
+                sub_topic = get_object_or_404(LearningSubTopic, id=sub_topic_id)
+                question = generate_multipul_choice_question(title=sub_topic.sub_topic, previous_questions=history)
 
             # 生成した問題を履歴に追加
             history.append(question)
@@ -133,6 +143,32 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
 
         # 終了
         else:
+            # Progressモデル保存データを取得(学習目標、メイントピック、サブトピック)
+            learning_objective_id = request.session.get('learning_objective_id')
+            learning_objective = get_object_or_404(LearningObjective, id=learning_objective_id)
+            main_topic_id = request.session.get('main_topic_id')
+            main_topic = get_object_or_404(LearningMainTopic, id=main_topic_id)
+            if 'main' in url_name:
+                sub_topic_ids = request.session.get('sub_topic_ids')
+                sub_topic = get_object_or_404(LearningSubTopic, id=sub_topic_ids[0])
+            elif 'sub' in url_name:
+                sub_topic_id = request.session.get('sub_topic_id')
+                sub_topic = get_object_or_404(LearningSubTopic, id=sub_topic_id)
+            
+            # Progressモデルにテストデータを保存
+            progress = Progress.objects.create(
+                user=request.user,
+                learning_objective=learning_objective,
+                main_topic=main_topic,
+                sub_topic=sub_topic,
+                score=total_score,
+                session_type='main' if 'main' in url_name else 'sub',
+            )
+
+            # LearningObjectiveモデルの総獲得スコアを更新
+            learning_objective.total_score = (learning_objective.total_score or 0) + total_score
+            learning_objective.save()
+
             response_data.update({
                 'finished': True,
                 'message': '全5問終了しました。終了ボタンを押してください。お疲れ様でした。',
