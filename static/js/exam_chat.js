@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 scoreStrong.textContent = 'TotalScore: ';
                 aiStrong.textContent = 'AI: ';
                 totalScoreDiv.appendChild(scoreStrong);
-                totalScoreDiv.append(`${data.totalscore}`);
-                chatBox.appendChild(totalscore);
+                totalScoreDiv.append(`${data.total_score}`);
+                chatBox.appendChild(totalScoreDiv);
                 messageDiv.appendChild(aiStrong);
                 messageDiv.append(`${data.message}`);
                 chatBox.appendChild(messageDiv);
