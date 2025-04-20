@@ -19,8 +19,9 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         url_name = request.resolver_match.url_name
 
-        # セッションのスコアを初期化
-        request.session['total_score'] = 0
+        # セッションを初期化(スコア、問題履歴、問題数、出題問題)
+        for key in ['totol_score', 'question_history', 'question_count', 'current_question']:
+            request.session.pop(key, None)
 
         # 出題する問題のトピックidを取得、セッションに保存
         topic_id = self.kwargs['topic_id']
@@ -39,8 +40,7 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
             sub_topics_str = ', '.join([sub.sub_topic for sub in sub_topics])
             question = generate_multipul_choice_question(title=sub_topics_str)
 
-            # トピック名をテンプレートに渡す
-            context = {'topic': main_topic.main_topic}
+            topic_name = main_topic.main_topic
 
         elif 'sub' in url_name:
             # セッションに保存(サブトピックid)
@@ -51,9 +51,8 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
 
             # 問題生成
             question = generate_multipul_choice_question(title=sub_topic.sub_topic)
-        
-            # トピック名をテンプレートに渡す
-            context = {'topic': sub_topic.sub_topic}
+
+            topic_name = sub_topic.sub_topic
 
         # セッションに保存(学習目標id、生成された問題)
         learning_objective_id = main_topic.learning_objective.id
@@ -64,11 +63,9 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
             # セッションに保存(1問目、問題リスト、総スコア、問題数カウント)
             request.session['current_question'] = question  # 採点で使用
 
-            # リロードされてget()が2回呼ばれた時、question_historyの初期化を避ける。
-            if 'question_history' not in request.session:
-                request.session['question_history'] = [question]  # 2問目以降の問題生成で使用(問題内容の重複を避けるため)
-            else:
-                request.session['question_history'].append(question)
+            history = request.session.get('question_history', [])
+            history.append(question)
+            request.session['question_history'] = history
 
             request.session['total_score'] = 0
             request.session['question_count'] = 1
@@ -80,6 +77,9 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
         context = {
             'learning_objective': learning_objective,
             'question': question,
+            'topic': topic_name,
+            'topic_id': topic_id,
+            'url_name': f'exam:{url_name}',
         }
         return render(request, 'exam/exam.html', context)
 
@@ -119,7 +119,8 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
         # 次の問題
         if question_count <= 5:
             # 出題履歴を取得
-            history = request.session.get('question_history')
+            history = request.session.get('question_history', [])
+            print(f'history: {history}')
             if 'main' in url_name:
                 sub_topic_ids = request.session.get('sub_topic_ids')
                 # 問題生成

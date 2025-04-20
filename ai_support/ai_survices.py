@@ -147,7 +147,7 @@ def generate_multipul_choice_question(title, previous_questions=None):
             'a): 生成した選択肢\n'
         )
         prompt_template = ChatPromptTemplate.from_template(prompt_text)
-        prompt = prompt_template.format_prompt(title=title, previous_questions=question_history)
+        prompt = prompt_template.format_prompt(title=title, question_history=question_history)
     else:
         prompt_text = (
             'あなたは優秀な教師です。以下のタイトルに関する選択問題を1問生成してください。'
