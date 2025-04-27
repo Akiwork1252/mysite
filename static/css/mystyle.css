@@ -11,4 +11,10 @@ footer {
 .my-div-style {
     margin-top: 6rem;
 }
-  
+
+#chat-box {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px; 
+}

@@ -131,7 +131,7 @@ def lectures_by_ai(title, user_input='', lecture_contents=''):
 
 
 # 選択問題を生成
-def generate_multipul_choice_question(title, previous_questions=None):
+def generate_multipul_choice_question(title, previous_questions=None, question_count=None):
     llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.7, max_completion_tokens=1000)
     
     if previous_questions:
@@ -143,18 +143,18 @@ def generate_multipul_choice_question(title, previous_questions=None):
             'これまでに出題された問題:{question_history}\n'
             '出力例のように改行を入れて出力してください。(必須)\n'
             '<出力例>'
-            'Question: 生成した問題\n'
+            'No.{question_count}: 生成した問題\n'
             'a): 生成した選択肢\n'
         )
         prompt_template = ChatPromptTemplate.from_template(prompt_text)
-        prompt = prompt_template.format_prompt(title=title, question_history=question_history)
+        prompt = prompt_template.format_prompt(title=title, question_history=question_history, question_count=question_count)
     else:
         prompt_text = (
             'あなたは優秀な教師です。以下のタイトルに関する選択問題を1問生成してください。'
             'タイトル:{title}\n'
             '出力例のように改行を入れて出力してください。(必須)\n'
             '<出力例>'
-            'Question: 生成した問題\n'
+            'No.1: 生成した問題\n'
             'a): 生成した選択肢\n'
         )
         prompt_template = ChatPromptTemplate.from_template(prompt_text)
