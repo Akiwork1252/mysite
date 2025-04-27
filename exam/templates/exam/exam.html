@@ -3,7 +3,7 @@
 
 {% block head %}
     <meta name='csrf-token' content={{ csrf_token }}>
-    <link rel="stylesheet" href="{% static "css/clean_blog.html" %}">
+    <link rel="stylesheet" href="{% static "css/clean_blog.css" %}">
     <link rel="stylesheet" href="{% static "css/mystyle.css" %}">
 {% endblock head %}
 
@@ -19,14 +19,15 @@
             </p>
         </div>
         <!-- Chat -->
-        <div id='chat-box'>
+        <div id='chat-box' class='border m-2'>
             <div>
+                <strong>Question: </strong>
                 {{ question|linebreaksbr }}
             </div>
         </div>
-        <form id='chat-form' data-url='{% url url_name topic_id %}'>
-            <input id='message-input' type="text">
-            <div>
+        <form id='chat-form' data-url='{% url url_name topic_id %}' class='m-2'>
+            <input id='message-input' type="text" class='form-control' placeholder='回答を入力' required>
+            <div class='m-2'>
                 <button type='submit' class='btn btn-primary'>送信</button>
                 <button id='end-exam' type='button' class='btn btn-primary'>終了</button>
             </div>

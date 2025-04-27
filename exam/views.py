@@ -126,12 +126,21 @@ class MultipleChoiceQuestionsView(LoginRequiredMixin, View):
                 # 問題生成
                 sub_topics = LearningSubTopic.objects.filter(id__in=sub_topic_ids)
                 sub_topics_str = ', '.join([sub.sub_topic for sub in sub_topics])
-                question = generate_multipul_choice_question(title=sub_topics_str, previous_questions=history)
+                question = generate_multipul_choice_question(
+                    title=sub_topics_str, 
+                    previous_questions=history,
+                    question_count=question_count,
+                    )
+                
             elif 'sub' in url_name:
                 sub_topic_id = request.session.get('sub_topic_id')
                 # 問題生成
                 sub_topic = get_object_or_404(LearningSubTopic, id=sub_topic_id)
-                question = generate_multipul_choice_question(title=sub_topic.sub_topic, previous_questions=history)
+                question = generate_multipul_choice_question(
+                    title=sub_topic.sub_topic, 
+                    previous_questions=history,
+                    question_count=question_count,
+                    )
 
             # 生成した問題を履歴に追加
             history.append(question)
